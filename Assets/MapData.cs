@@ -15,6 +15,7 @@ public class MapData : MonoBehaviour
     {
         public string owner = "None", unit = "None";
         public int development = 0, ai_points = 0;
+        public bool gradiented = false;
 
         public Cell(string _owner = "None", string _unit = "None", int _development = 0, int _ai_point = 0)
         {
@@ -54,6 +55,23 @@ public class MapData : MonoBehaviour
         GameObject obj = Instantiate(soldier, new Vector3(x, y, -2), Quaternion.identity);
         obj.transform.SetParent(gameObject.transform);
         obj.name = name;
+    }
+
+    //y = 3, x=3
+    public void insertPointsGradient(int y, int processedX, int movementDesire)
+    {
+        try
+        {
+            if (cells[y, processedX].gradiented == false)
+            {
+            }
+
+            insertPointsGradient(y + 1)
+        }
+        catch (IndexOutOfRangeException)
+        {
+            throw;
+        }
     }
 
     public void MoveUnitInRegistry(string name, int newX, int newY)
@@ -101,7 +119,7 @@ public class MapData : MonoBehaviour
                 try
                 {
                 }
-                catch (Exception)
+                catch (IndexOutOfRangeException)
                 {
                     throw;
                 }
