@@ -14,7 +14,7 @@ public class MapData : MonoBehaviour
     public class Cell
     {
         public string owner = "None", unit = "None";
-        public int development = 0;
+        public int development = 0, ai_points = 0;
 
         public Cell(string _owner = "None", string _unit = "None", int _development = 0)
         {
@@ -35,16 +35,24 @@ public class MapData : MonoBehaviour
         {new Cell("Player","Soldier0",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         };
 
-    public void spawnTile(int x, int y)
+    public void spawnFriendlyTile(int x, int y)
     {
+        //print("SP CALLED");
         GameObject obj = Instantiate(ownedTile, new Vector3(x, y, -1), Quaternion.identity);
 
         obj.transform.SetParent(gameObject.transform);
     }
 
+    public void spawnFriendlySoldier(int x, int y, string name)
+    {
+        GameObject obj = Instantiate(soldier, new Vector3(x, y, -2), Quaternion.identity);
+        obj.transform.SetParent(gameObject.transform);
+        obj.name = name;
+    }
+
     public void MoveUnitInRegistry(string name, int newX, int newY)
     {
-        Cell cell = cells[newX, 7 - newY];
+        Cell cell = cells[7 - newY, newX];
         foreach (var c in cells)
         {
             if (c.unit == name)
@@ -58,7 +66,7 @@ public class MapData : MonoBehaviour
         if (cell.owner != "Player")
         {
             cell.owner = "Player";
-            spawnTile(newX, newY);
+            spawnFriendlyTile(newX, newY);
         }//print(cells[newX, 7 - newY].unit);
     }
 
@@ -68,7 +76,8 @@ public class MapData : MonoBehaviour
         //  TODO: refactor this for performance
         foreach (Transform child in gameObject.transform)
         {
-            Destroy(child);
+            Destroy(child.gameObject);
+            GameObject.Find("Player").GetComponent<Data>().selectedObjects = new List<GameObject>();
         }
 
         //Create Cells
@@ -82,15 +91,13 @@ public class MapData : MonoBehaviour
             }
             if (cell.owner == "Player")
             {
-                spawnTile(i, 7 - j);
+                spawnFriendlyTile(i, 7 - j);
                 //GameObject obj = Instantiate(ownedTile, new Vector3(i, 7 - j, -1), Quaternion.identity);
                 //obj.transform.SetParent(gameObject.transform);
             }
             if (cell.unit != "None")
             {
-                GameObject obj = Instantiate(soldier, new Vector3(i, 7 - j, -2), Quaternion.identity);
-                obj.transform.SetParent(gameObject.transform);
-                obj.name = cell.unit;
+                spawnFriendlySoldier(i, 7 - j, cell.unit);
             }
 
             print("Updated Map");
@@ -111,5 +118,13 @@ public class MapData : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (Input.GetKeyUp(KeyCode.BackQuote))
+        {
+            RegenerateMap();
+            foreach (Cell cell in cells)
+            {
+                //print(cell.owner);
+            }
+        }
     }
 }
