@@ -16,11 +16,17 @@ public class MapData : MonoBehaviour
         public string owner = "None", unit = "None";
         public int development = 0, ai_points = 0;
 
-        public Cell(string _owner = "None", string _unit = "None", int _development = 0)
+        public Cell(string _owner = "None", string _unit = "None", int _development = 0, int _ai_point = 0)
         {
             owner = _owner; //Player or Enemy
             unit = _unit;
             development = _development;
+            ai_points = _ai_point;
+        }
+
+        public override string ToString()
+        {
+            return owner + " " + unit + " " + development.ToString() + " " + ai_points.ToString();
         }
     }
 
@@ -32,7 +38,7 @@ public class MapData : MonoBehaviour
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
-        {new Cell("Player","Soldier0",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
+        {new Cell("Player","PlayerSoldier0",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         };
 
     public void spawnFriendlyTile(int x, int y)
@@ -92,10 +98,17 @@ public class MapData : MonoBehaviour
             if (cell.owner == "Player")
             {
                 spawnFriendlyTile(i, 7 - j);
+                try
+                {
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
                 //GameObject obj = Instantiate(ownedTile, new Vector3(i, 7 - j, -1), Quaternion.identity);
                 //obj.transform.SetParent(gameObject.transform);
             }
-            if (cell.unit != "None")
+            if (cell.unit.Contains("Player"))
             {
                 spawnFriendlySoldier(i, 7 - j, cell.unit);
             }

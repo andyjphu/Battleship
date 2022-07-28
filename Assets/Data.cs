@@ -54,12 +54,17 @@ public class Data : MonoBehaviour
                 {
                     obj.GetComponent<UnitClickable>().selected = false;
                     obj.GetComponent<UnitClickable>().Invoke("OnMouseExit", 0.0f);
+                    obj.GetComponent<UnitClickable>().DestroyChildren();
                 }
                 if (obj.GetComponent<TileClickable>() != null)
                 {
                     obj.GetComponent<TileClickable>().selected = false;
                     obj.GetComponent<TileClickable>().Invoke("OnMouseExit", 0.0f);
                 }
+                //if (obj.GetComponent<MoveClickable>() != null)
+                //{
+                //    Destroy(obj.GetComponent<MoveClickable>());
+                //}
             }
             selectedObjects = new List<GameObject>();
         }

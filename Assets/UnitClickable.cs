@@ -89,6 +89,14 @@ public class UnitClickable : MonoBehaviour
         }
     }
 
+    public void DestroyChildren()
+    {
+        foreach (Transform child in gameObject.GetComponent<Transform>())
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
     private void ToggleSelected()
     {
     }
