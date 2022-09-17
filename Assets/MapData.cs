@@ -32,7 +32,7 @@ public class MapData : MonoBehaviour
         }
     }
 
-    public Cell[,] cells = new Cell[8, 8] {                             //When converting from engine coords to table, subtract y by 7
+    public Cell[,] cells = new Cell[8, 8] {                             //When converting from engine coords to table, subtract y by 7 or use map to data function
         {new Cell("Enemy","E001L001",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
@@ -45,7 +45,6 @@ public class MapData : MonoBehaviour
 
     public void spawnFriendlyTile(int x, int y)
     {
-        //print("SP CALLED");
         GameObject obj = Instantiate(ownedTile, new Vector3(x, y, -1), Quaternion.identity);
 
         obj.transform.SetParent(gameObject.transform);
@@ -57,23 +56,6 @@ public class MapData : MonoBehaviour
         obj.transform.SetParent(gameObject.transform);
         obj.name = name;
     }
-
-    //y = 3, x=3
-    /* public void insertPointsGradient(int y, int processedX, int movementDesire)
-     {
-         try
-         {
-             if (cells[y, processedX].gradiented == false)
-             {
-             }
-
-             insertPointsGradient(y + 1)
-         }
-         catch (IndexOutOfRangeException)
-         {
-             throw;
-         }
-     }*/
 
     /// <summary>
     /// Generates the desire of the AI to move into each tile
@@ -130,7 +112,7 @@ public class MapData : MonoBehaviour
         Cell cell = cells[gameToData(newY), newX]; //This collection is ordered by Y from the top (0,0 is the bottom left tile on the real map but 7,0 is the bottom left tile in the data)
         cell.unit = name;
 
-        if (cell.owner != "Player")
+        if (cell.owner != "Player" && name[0] == 'P')
         {
             cell.owner = "Player";
             spawnFriendlyTile(newX, newY);
@@ -169,7 +151,7 @@ public class MapData : MonoBehaviour
                 //GameObject obj = Instantiate(ownedTile, new Vector3(i, 7 - j, -1), Quaternion.identity);
                 //obj.transform.SetParent(gameObject.transform);
             }
-            if (cell.unit.Contains("Player"))
+            if (cell.unit[0] == 'P')
             {
                 spawnFriendlySoldier(i, 7 - j, cell.unit);
             }
