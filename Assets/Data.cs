@@ -10,6 +10,8 @@ public class Data : MonoBehaviour
     public GameObject StatsDisplay;
     public GameObject ConsoleDisplay;
 
+    public bool inSelectMode = false;
+
     // Start is called before the first frame update
     private void Start()
     {

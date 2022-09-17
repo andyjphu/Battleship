@@ -16,6 +16,7 @@ public class MapData : MonoBehaviour
         public string owner = "None", unit = "None";
         public int development = 0, ai_points = 0;
         public bool gradiented = false;
+        public (int, int) cellXY = (0, 0);
 
         public Cell(string _owner = "None", string _unit = "None", int _development = 0, int _ai_point = 0)
         {
@@ -31,16 +32,16 @@ public class MapData : MonoBehaviour
         }
     }
 
-    public Cell[,] cells = new Cell[8, 8] {
+    public Cell[,] cells = new Cell[8, 8] {                             //When converting from engine coords to table, subtract y by 7
+        {new Cell("Enemy","E001L001",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
         {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
-        {new Cell() ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
-        {new Cell("Player","PlayerSoldier0",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
-        };
+        {new Cell("Player","P001L001",0) ,new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell(),new Cell()},
+    };
 
     public void spawnFriendlyTile(int x, int y)
     {
@@ -58,25 +59,65 @@ public class MapData : MonoBehaviour
     }
 
     //y = 3, x=3
-    public void insertPointsGradient(int y, int processedX, int movementDesire)
-    {
-        try
-        {
-            if (cells[y, processedX].gradiented == false)
-            {
-            }
+    /* public void insertPointsGradient(int y, int processedX, int movementDesire)
+     {
+         try
+         {
+             if (cells[y, processedX].gradiented == false)
+             {
+             }
 
-            insertPointsGradient(y + 1)
-        }
-        catch (IndexOutOfRangeException)
+             insertPointsGradient(y + 1)
+         }
+         catch (IndexOutOfRangeException)
+         {
+             throw;
+         }
+     }*/
+
+    /// <summary>
+    /// Generates the desire of the AI to move into each tile
+    /// </summary>
+    public void generateAIDesire()
+    {
+        foreach (Cell cell in cells)
         {
-            throw;
+            if (cell.owner != "Enemy")
+            {
+                cell.ai_points = 5;
+            }
+            if (cell.unit[0] == 'P')
+            {
+                cell.ai_points = 2;
+            }
+        }
+        foreach (Cell cell in cells)
+        {
+            if (cell.ai_points == 0)
+            {
+                cell.ai_points = UnityEngine.Random.Range(0, 1); //TODO: ADD PROPER ALGORITHMN
+            }
         }
     }
 
+    /// <summary>
+    /// This function converts from runtime y coordinate to array y coordinate
+    /// </summary>
+    /// <param name="y">the runtime unity coordinate Y</param>
+    /// <returns></returns>
+    public int gameToData(int y)
+    {
+        return (7 - y);
+    }
+
+    /// <summary>
+    /// Moves the unit of name to a new position in the central database
+    /// </summary>
+    /// <param name="name">name of unit</param>
+    /// <param name="newX">where the unit is trying to move with respect to X</param>
+    /// <param name="newY">where the unit is trying to move with respect to Y</param>
     public void MoveUnitInRegistry(string name, int newX, int newY)
     {
-        Cell cell = cells[7 - newY, newX];
         foreach (var c in cells)
         {
             if (c.unit == name)
@@ -86,7 +127,9 @@ public class MapData : MonoBehaviour
             //print(cell.unit + cell);
         }
 
+        Cell cell = cells[gameToData(newY), newX]; //This collection is ordered by Y from the top (0,0 is the bottom left tile on the real map but 7,0 is the bottom left tile in the data)
         cell.unit = name;
+
         if (cell.owner != "Player")
         {
             cell.owner = "Player";
@@ -100,8 +143,8 @@ public class MapData : MonoBehaviour
         //  TODO: refactor this for performance
         foreach (Transform child in gameObject.transform)
         {
-            Destroy(child.gameObject);
-            GameObject.Find("Player").GetComponent<Data>().selectedObjects = new List<GameObject>();
+            Destroy(child.gameObject);//Delete Cells
+            GameObject.Find("Player").GetComponent<Data>().selectedObjects = new List<GameObject>(); //Clear List of Selected Objects
         }
 
         //Create Cells
@@ -144,6 +187,7 @@ public class MapData : MonoBehaviour
     private void Start()
     {
         RegenerateMap();
+        generateAIDesire();
     }
 
     // Update is called once per frame

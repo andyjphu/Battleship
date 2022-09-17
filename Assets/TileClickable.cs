@@ -35,18 +35,21 @@ public class TileClickable : MonoBehaviour
 
     private void OnMouseDown()
     {
-        selected = !selected;
-        //GameObject.Find("Player").GetComponent<Data>().selectedObjects =
-        //selected == true? GameObject.Find("Player").GetComponent<Data>().selectedObjects.add(gameObject) : selected = true;
-        if (selected)
+        if (data.inSelectMode)
         {
-            data.selectedObjects.Add(gameObject);
+            selected = !selected;
+            //GameObject.Find("Player").GetComponent<Data>().selectedObjects =
+            //selected == true? GameObject.Find("Player").GetComponent<Data>().selectedObjects.add(gameObject) : selected = true;
+            if (selected)
+            {
+                data.selectedObjects.Add(gameObject);
+            }
+            else
+            {
+                data.selectedObjects.Remove(gameObject);
+            }
+            gameObject.GetComponent<SpriteRenderer>().color = originalColor - adjustB;
         }
-        else
-        {
-            data.selectedObjects.Remove(gameObject);
-        }
-        gameObject.GetComponent<SpriteRenderer>().color = originalColor - adjustB;
     }
 
     private void OnMouseExit()
